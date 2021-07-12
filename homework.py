@@ -8,7 +8,6 @@ from requests.exceptions import RequestException
 
 from telegram import Bot
 
-
 PRAKTIKUM_TOKEN = os.environ.get('PRAKTIKUM_TOKEN')
 TELEGRAM_TOKEN = os.environ.get('TELEGRAM_TOKEN')
 CHAT_ID = os.environ.get('TELEGRAM_CHAT_ID')
@@ -42,8 +41,9 @@ HEADERS = {
     'Authorization': f'OAuth {PRAKTIKUM_TOKEN}'
 }
 # не проходят тесты на яндексе, когда использую константу
-#REPEAT_TIME = time.sleep(5 * 60)
-#SLEEP_TIME = time.sleep(5)
+# REPEAT_TIME = time.sleep(5 * 60)
+# SLEEP_TIME = time.sleep(5)
+
 
 def parse_homework_status(homework):
     homework_name = homework.get('homework_name')
