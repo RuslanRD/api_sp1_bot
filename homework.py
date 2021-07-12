@@ -8,23 +8,13 @@ from requests.exceptions import RequestException
 
 from telegram import Bot
 
+
 PRAKTIKUM_TOKEN = os.environ.get('PRAKTIKUM_TOKEN')
 TELEGRAM_TOKEN = os.environ.get('TELEGRAM_TOKEN')
 CHAT_ID = os.environ.get('TELEGRAM_CHAT_ID')
-bot = Bot(TELEGRAM_TOKEN)
-path = '~/main.log'
-repeat_time = time.sleep(5 * 60)
-sleep_time = time.sleep(5)
-url = 'https://praktikum.yandex.ru/api/user_api/homework_statuses/'
-headers = {
-    'Authorization': f'OAuth {PRAKTIKUM_TOKEN}'
-}
-HOMEWORK_STATUSES = {
-    'reviewing': 'Работа взята на ревью.',
-    'rejected': 'К сожалению, в работе нашлись ошибки.',
-    'approved': 'Ревьюеру всё понравилось, работа зачтена!'
-}
 
+bot = Bot(TELEGRAM_TOKEN)
+PATH = '~/main.log'
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -35,12 +25,25 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 handler = RotatingFileHandler(
-    os.path.expanduser(path),
+    os.path.expanduser(PATH),
     maxBytes=50000000,
     backupCount=5,
 )
 logger.addHandler(handler)
 
+HOMEWORK_STATUSES = {
+    'reviewing': 'Работа взята на ревью.',
+    'rejected': 'К сожалению, в работе нашлись ошибки.',
+    'approved': 'Ревьюеру всё понравилось, работа зачтена!'
+}
+
+URL = 'https://praktikum.yandex.ru/api/user_api/homework_statuses/'
+HEADERS = {
+    'Authorization': f'OAuth {PRAKTIKUM_TOKEN}'
+}
+# не проходят тесты на яндексе, когда использую константу
+#REPEAT_TIME = time.sleep(5 * 60)
+#SLEEP_TIME = time.sleep(5)
 
 def parse_homework_status(homework):
     homework_name = homework.get('homework_name')
@@ -64,8 +67,8 @@ def get_homeworks(current_timestamp):
         logging.error(f'Invalid date: {error}')
     try:
         homework_statuses = requests.get(
-            url,
-            headers=headers,
+            URL,
+            headers=HEADERS,
             params=payload
         )
     except requests.exceptions.RequestException as error:
@@ -91,7 +94,7 @@ def send_message(message):
 
 def main():
     current_timestamp = int(time.time())
-    bot.send_message(CHAT_ID, text='Start')
+
     while True:
         try:
             homeworks = get_homeworks(current_timestamp)
@@ -99,11 +102,10 @@ def main():
                 last_homework = homeworks['homeworks'][0]
                 message = parse_homework_status(last_homework)
                 send_message(message)
-                current_timestamp = homeworks['current_date']
-                repeat_time
+                time.sleep(5 * 60)
         except Exception as e:
             logging.error(f'Бот упал с ошибкой: {e}')
-            sleep_time
+            time.sleep(5)
 
 
 if __name__ == '__main__':
