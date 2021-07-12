@@ -40,9 +40,9 @@ URL = 'https://praktikum.yandex.ru/api/user_api/homework_statuses/'
 HEADERS = {
     'Authorization': f'OAuth {PRAKTIKUM_TOKEN}'
 }
-# не проходят тесты на яндексе, когда использую константу
-# REPEAT_TIME = time.sleep(5 * 60)
-# SLEEP_TIME = time.sleep(5)
+
+REPEAT_TIME = 5 * 60
+SLEEP_TIME = 5
 
 
 def parse_homework_status(homework):
@@ -88,7 +88,7 @@ def get_homeworks(current_timestamp):
 def send_message(message):
     try:
         return bot.send_message(CHAT_ID, message)
-    except Exception as error:
+    except SystemExit as error:
         logging.error(f'Invalid error: {error}')
 
 
@@ -102,10 +102,10 @@ def main():
                 last_homework = homeworks['homeworks'][0]
                 message = parse_homework_status(last_homework)
                 send_message(message)
-                time.sleep(5 * 60)
+                time.sleep(REPEAT_TIME)
         except Exception as e:
             logging.error(f'Бот упал с ошибкой: {e}')
-            time.sleep(5)
+            time.sleep(SLEEP_TIME)
 
 
 if __name__ == '__main__':
