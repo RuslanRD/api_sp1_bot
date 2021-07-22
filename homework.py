@@ -102,6 +102,7 @@ def main():
                 last_homework = homeworks['homeworks'][0]
                 message = parse_homework_status(last_homework)
                 send_message(message)
+                current_timestamp = homeworks.get('current_date')
                 time.sleep(REPEAT_TIME)
         except Exception as e:
             logging.error(f'Бот упал с ошибкой: {e}')
